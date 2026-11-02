@@ -1,0 +1,100 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  passwordHash String?
+  role         Role             @default(STUDENT)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  purchases    Purchase[]
+  progress     LessonProgress[]
+}
+
+model Course {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String?    @db.Text
+  price       Int        // Зберігається в центах: 4900 = 49.00 EUR
+  currency    String     @default("EUR")
+  isPublished Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  modules     Module[]
+  purchases   Purchase[]
+}
+
+model Module {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0)
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id        String           @id @default(cuid())
+  title     String
+  videoUrl  String?          @db.Text
+  content   String?          @db.Text
+  order     Int              @default(0)
+  isFree    Boolean          @default(false)
+  moduleId  String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  module    Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress  LessonProgress[]
+
+  @@index([moduleId])
+}
+
+model Purchase {
+  id              String   @id @default(cuid())
+  userId          String
+  courseId        String
+  stripeSessionId String?  @unique
+  amount          Int
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  isCompleted Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+}
