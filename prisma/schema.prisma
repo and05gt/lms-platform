@@ -29,7 +29,7 @@ model Course {
   title       String
   slug        String     @unique
   description String?    @db.Text
-  price       Int        // Зберігається в центах: 4900 = 49.00 EUR
+  price       Int        
   currency    String     @default("EUR")
   isPublished Boolean    @default(false)
   createdAt   DateTime   @default(now())
