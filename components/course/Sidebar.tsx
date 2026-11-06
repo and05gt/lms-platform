@@ -29,14 +29,14 @@ interface SidebarProps {
   };
   userEmail?: string;
   hasPurchased?: boolean;
-  completeLessonIds?: string[];
+  completedLessonIds?: string[];
 }
 
 const Sidebar = ({
   course,
   userEmail,
   hasPurchased = false,
-  completeLessonIds = [],
+  completedLessonIds = [],
 }: SidebarProps) => {
   const pathname = usePathname();
   const [openModules, setOpenModules] = useState<Record<string, boolean>>(
@@ -65,7 +65,7 @@ const Sidebar = ({
   );
   const progressPercentage =
     totalLessons > 0
-      ? Math.round((completeLessonIds.length / totalLessons) * 100)
+      ? Math.round((completedLessonIds.length / totalLessons) * 100)
       : 0;
 
   return (
@@ -116,7 +116,7 @@ const Sidebar = ({
                 <div className="mt-0.5 space-y-0.5">
                   {module.lessons.map(lesson => {
                     const isLocked = !hasPurchased && !lesson.isFree;
-                    const isCompleted = completeLessonIds.includes(lesson.id);
+                    const isCompleted = completedLessonIds.includes(lesson.id);
 
                     return (
                       <LessonItem
@@ -137,14 +137,16 @@ const Sidebar = ({
         })}
       </div>
 
-      <div className="p-4 border-t border-slate-800 bg-slate-900/40 space-y-2">
-        {userEmail && (
-          <div className="px-3 py-1 text-xs text-slate-500 truncate">
-            {userEmail}
-          </div>
-        )}
-        <LogoutButton variant="sidebar" />
-      </div>
+      {userEmail && (
+        <div className="p-4 border-t border-slate-800 bg-slate-900/40 space-y-2">
+          {userEmail && (
+            <div className="px-3 py-1 text-xs text-slate-500 truncate">
+              {userEmail}
+            </div>
+          )}
+          <LogoutButton variant="sidebar" />
+        </div>
+      )}
     </div>
   );
 };

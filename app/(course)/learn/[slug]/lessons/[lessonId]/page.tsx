@@ -2,7 +2,9 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import VideoPlayer from '@/components/course/VideoPlayer';
 import LockBanner from '@/components/course/LockBanner';
-import { FileText, CheckCircle2 } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { getCurrentUser } from '@/lib/auth';
+import CompleteButton from '@/components/course/CompleteButton';
 
 interface LessonPageProps {
   params: Promise<{
@@ -13,13 +15,26 @@ interface LessonPageProps {
 
 const LessonPage = async ({ params }: LessonPageProps) => {
   const { slug, lessonId } = await params;
+  const user = await getCurrentUser();
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
     include: {
       module: {
         include: {
-          course: true,
+          course: {
+            include: {
+              modules: {
+                orderBy: { order: 'asc' },
+                include: {
+                  lessons: {
+                    orderBy: { order: 'asc' },
+                    select: { id: true },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -31,8 +46,39 @@ const LessonPage = async ({ params }: LessonPageProps) => {
 
   const course = lesson.module.course;
 
-  // !temp auth
-  const hasPurchased = false;
+  const allLessons = course.modules.flatMap(m => m.lessons);
+  const currentIndex = allLessons.findIndex(l => l.id === lesson.id);
+
+  const nextLessonId =
+    currentIndex !== -1 && currentIndex < allLessons.length - 1
+      ? allLessons[currentIndex + 1].id
+      : null;
+
+  let isCompleted = false;
+  if (user) {
+    const progress = await prisma.lessonProgress.findUnique({
+      where: {
+        userId_lessonId: {
+          userId: user.id,
+          lessonId: lesson.id,
+        },
+      },
+    });
+    isCompleted = !!progress?.isCompleted;
+  }
+
+  let hasPurchased = false;
+  if (user) {
+    const purchase = await prisma.purchase.findUnique({
+      where: {
+        userId_courseId: {
+          userId: user.id,
+          courseId: course.id,
+        },
+      },
+    });
+    hasPurchased = !!purchase;
+  }
 
   const isLocked = !lesson.isFree && !hasPurchased;
 
@@ -60,13 +106,13 @@ const LessonPage = async ({ params }: LessonPageProps) => {
           </h1>
         </div>
 
-        {!isLocked && (
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-slate-100 text-sm font-medium transition-colors self-start sm:self-auto">
-            <CheckCircle2 className="w-4 h-4 text-slate-500" />
-            <span>Позначити як пройдений</span>
-          </button>
+        {!isLocked && user && (
+          <CompleteButton
+            lessonId={lesson.id}
+            courseSlug={course.slug}
+            isCompleted={isCompleted}
+            nextLessonId={nextLessonId}
+          />
         )}
       </div>
 

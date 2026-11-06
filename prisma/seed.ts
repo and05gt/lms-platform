@@ -26,6 +26,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: 'admin@example.com',
+      passwordHash: defaultPasswordHash,
       role: Role.ADMIN,
     },
   });
@@ -97,6 +98,20 @@ async function main() {
   });
 
   console.log(`Course created: "${course.title}" (slug: ${course.slug})`);
+
+  const purchase = await prisma.purchase.create({
+    data: {
+      userId: student.id,
+      courseId: course.id,
+      stripeSessionId: 'seed_test_session_student',
+      amount: course.price,
+    },
+  });
+
+  console.log(
+    `A course purchase has been created for: ${student.email} (Purchase ID: ${purchase.id})`
+  );
+
   console.log(
     '✅ The database has been successfully populated with test data!'
   );

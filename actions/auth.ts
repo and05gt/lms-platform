@@ -36,7 +36,7 @@ export const loginAction = async (
 
   await createSession(user?.id);
 
-  redirect('/learn');
+  redirect('/');
 };
 
 export const logoutAction = async () => {

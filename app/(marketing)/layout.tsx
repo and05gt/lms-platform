@@ -13,7 +13,7 @@ const MarketingLayout = async ({ children }: MarketingLayoutProps) => {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
       <header className="h-16 border-b border-slate-800/80 px-6 flex items-center justify-between">
         <Link
-          href={'/courses'}
+          href={'/'}
           className="font-bold text-base text-white tracking-tight">
           LMS Platform
         </Link>
