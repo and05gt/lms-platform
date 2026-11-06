@@ -3,13 +3,13 @@
 import { useActionState } from 'react';
 import Link from 'next/link';
 import { LogIn, Loader2, AlertCircle } from 'lucide-react';
-import { loginAction, LoginFormState } from '@/actions/auth';
+import { loginAction, FormState } from '@/actions/auth';
 
 const LoginForm = () => {
-  const [state, formAction, isPending] = useActionState<
-    LoginFormState,
-    FormData
-  >(loginAction, {});
+  const [state, formAction, isPending] = useActionState<FormState, FormData>(
+    loginAction,
+    {}
+  );
 
   return (
     <form action={formAction} className="space-y-4">
@@ -73,7 +73,7 @@ const LoginForm = () => {
 
       <p className="text-center text-xs text-slate-500 mt-4">
         Немає акаунту?{' '}
-        <Link href={'/register'} className="text-sky-400 hover:underline">
+        <Link href="/register" className="text-sky-400 hover:underline">
           Зареєструватися
         </Link>
       </p>

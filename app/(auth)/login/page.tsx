@@ -6,7 +6,7 @@ const LoginPage = async () => {
   const user = await getCurrentUser();
 
   if (user) {
-    redirect('/courses');
+    redirect('/');
   }
 
   return (
