@@ -8,9 +8,9 @@ import {
   Clock,
   BookOpen,
   ShieldCheck,
-  ArrowRight,
   Sparkles,
 } from 'lucide-react';
+import CheckoutButton from '@/components/course/CheckoutButton';
 
 interface CourseLandingPageProps {
   params: Promise<{ slug: string }>;
@@ -131,12 +131,7 @@ const CourseLandingPage = async ({ params }: CourseLandingPageProps) => {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  className="w-full py-4 px-6 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-sky-500/20 active:scale-[0.98] flex items-center justify-center gap-2">
-                  <span>Отримати повний доступ</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                <CheckoutButton courseId={course.id} />
 
                 <p className="text-[11px] text-center text-slate-500 mt-4">
                   Безпечна оплата через Stripe (Apple Pay, Google Pay,

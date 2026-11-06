@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, BookOpen } from 'lucide-react';
 import LessonItem from './LessonItem';
+import LogoutButton from '../auth/LogoutButton';
 
 interface Lesson {
   id: string;
@@ -26,12 +27,14 @@ interface SidebarProps {
     slug: string;
     modules: Module[];
   };
+  userEmail?: string;
   hasPurchased?: boolean;
   completeLessonIds?: string[];
 }
 
 const Sidebar = ({
   course,
+  userEmail,
   hasPurchased = false,
   completeLessonIds = [],
 }: SidebarProps) => {
@@ -132,6 +135,15 @@ const Sidebar = ({
             </div>
           );
         })}
+      </div>
+
+      <div className="p-4 border-t border-slate-800 bg-slate-900/40 space-y-2">
+        {userEmail && (
+          <div className="px-3 py-1 text-xs text-slate-500 truncate">
+            {userEmail}
+          </div>
+        )}
+        <LogoutButton variant="sidebar" />
       </div>
     </div>
   );

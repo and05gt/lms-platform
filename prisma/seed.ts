@@ -1,4 +1,5 @@
 import { PrismaClient, Role } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -12,9 +13,12 @@ async function main() {
   await prisma.course.deleteMany();
   await prisma.user.deleteMany();
 
+  const defaultPasswordHash = await bcrypt.hash('password123', 10);
+
   const student = await prisma.user.create({
     data: {
       email: 'student@example.com',
+      passwordHash: defaultPasswordHash,
       role: Role.STUDENT,
     },
   });
