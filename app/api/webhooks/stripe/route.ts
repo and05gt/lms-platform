@@ -75,9 +75,12 @@ export const POST = async (req: Request) => {
       console.log(
         `✅ Доступ до курсу ${courseId} надано користувачу ${user.email} (ID: ${user.id})`
       );
+
+      return new NextResponse(null, { status: 200 });
     } catch (err) {
       console.error('Database error while processing purchase:', err);
       return new NextResponse('Database error', { status: 500 });
     }
   }
+  return new NextResponse(null, { status: 200 });
 };

@@ -58,8 +58,8 @@ export const createCheckoutSession = async (courseId: string) => {
     },
     allow_promotion_codes: true,
     billing_address_collection: 'auto',
-    success_url: `${appUrl}/courses/${course.slug}?success=1`,
-    cancel_url: `${appUrl}/courses/${course.slug}?canceled=1`,
+    success_url: `${appUrl}/learn/${course.slug}?success=1`,
+    cancel_url: `${appUrl}/learn/${course.slug}?canceled=1`,
   });
 
   if (!session.url) {
